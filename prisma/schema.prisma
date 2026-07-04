@@ -1,0 +1,260 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  STUDENT
+  ADMIN
+  EDUCATOR
+  MODERATOR
+}
+
+enum Difficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum Rank {
+  BEGINNER
+  EXPLORER
+  SCHOLAR
+  EXPERT
+  MASTER
+  GRANDMASTER
+  LEGEND
+  BRAINWAVE_KING
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+model User {
+  id            String        @id @default(uuid())
+  email         String        @unique
+  passwordHash  String
+  role          Role          @default(STUDENT)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  profile       Profile?
+  payments      Payment[]
+  submissions   Submission[]
+  discussions   Discussion[]
+  answers       Answer[]
+  comments      Comment[]
+  progress      Progress[]
+  certificates  Certificate[]
+  notifications Notification[]
+  badges        UserBadge[]
+}
+
+model Profile {
+  id             String   @id @default(uuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  username       String   @unique
+  avatarUrl      String?
+  bio            String?
+  githubUrl      String?
+  linkedinUrl    String?
+  xp             Int      @default(0)
+  level          Int      @default(1)
+  streak         Int      @default(0)
+  lastActive     DateTime @default(now())
+  rank           Rank     @default(BEGINNER)
+  rating         Int      @default(1200) // Contest rating
+}
+
+model Course {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  category    String
+  difficulty  Difficulty    @default(EASY)
+  xpReward    Int           @default(100)
+  createdAt   DateTime      @default(now())
+  modules     Module[]
+  progress    Progress[]
+  certificates Certificate[]
+}
+
+model Module {
+  id        String   @id @default(uuid())
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title     String
+  order     Int
+  lessons   Lesson[]
+}
+
+model Lesson {
+  id        String     @id @default(uuid())
+  moduleId  String
+  module    Module     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  title     String
+  order     Int
+  duration  Int        // in minutes
+  video     Video?
+  quiz      Quiz?
+  progress  Progress[]
+}
+
+model Video {
+  id        String   @id @default(uuid())
+  lessonId  String   @unique
+  lesson    Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title     String
+  videoUrl  String
+}
+
+model Quiz {
+  id        String         @id @default(uuid())
+  lessonId  String         @unique
+  lesson    Lesson         @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  title     String
+  questions QuizQuestion[]
+}
+
+model QuizQuestion {
+  id        String   @id @default(uuid())
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question  String
+  options   String[] // Array of choices
+  correct   Int      // Index of correct option
+}
+
+model Problem {
+  id           String       @id @default(uuid())
+  title        String
+  difficulty   Difficulty   @default(EASY)
+  category     String
+  statement    String
+  exampleInput String
+  exampleOut   String
+  explanation  String?
+  xpReward     Int          @default(25)
+  defaultCode  Json         // Boilerplates in C++, Java, JS, Python
+  testCases    Json         // Array of inputs and outputs
+  submissions  Submission[]
+}
+
+model Submission {
+  id           String        @id @default(uuid())
+  userId       String
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId    String
+  problem      Problem       @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  code         String
+  language     String
+  status       String        // "ACCEPTED", "WRONG_ANSWER", "RUNTIME_ERROR"
+  timeMs       Int           // Execution speed
+  memoryKb     Int           // RAM footprint
+  createdAt    DateTime      @default(now())
+}
+
+model Discussion {
+  id        String    @id @default(uuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  category  String
+  upvotes   Int       @default(0)
+  createdAt DateTime  @default(now())
+  answers   Answer[]
+  comments  Comment[]
+}
+
+model Answer {
+  id           String     @id @default(uuid())
+  discussionId String
+  discussion   Discussion @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content      String
+  upvotes      Int        @default(0)
+  isAccepted   Boolean    @default(false)
+  createdAt    DateTime   @default(now())
+}
+
+model Comment {
+  id           String      @id @default(uuid())
+  discussionId String
+  discussion   Discussion  @relation(fields: [discussionId], references: [id], onDelete: Cascade)
+  userId       String
+  user         User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content      String
+  createdAt    DateTime    @default(now())
+}
+
+model Badge {
+  id          String      @id @default(uuid())
+  name        String      @unique
+  description String
+  icon        String
+  users       UserBadge[]
+}
+
+model UserBadge {
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  unlockedAt DateTime @default(now())
+
+  @@id([userId, badgeId])
+}
+
+model Certificate {
+  id           String   @id @default(uuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId     String
+  course       Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  credentialId String   @unique
+  issueDate    DateTime @default(now())
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  userId        String
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  amount        Int           // in cents
+  currency      String        @default("INR")
+  status        PaymentStatus @default(PENDING)
+  gatewayTxId   String        @unique // Stripe/Razorpay reference
+  createdAt     DateTime      @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  content   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Progress {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  completedAt DateTime @default(now())
+
+  @@unique([userId, courseId, lessonId])
+}
