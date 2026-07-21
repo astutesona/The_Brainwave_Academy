@@ -1,16 +1,65 @@
 # React + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This project is created using **React** and **Vite**.
 
-Currently, two official plugins are available:
+Vite is a fast build tool that helps you create and run React applications quickly. It also updates your application instantly whenever you save your code, so you don't need to refresh the browser every time.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What's Included?
+
+This project already includes:
+
+- React for building the user interface.
+- Vite for fast development and building the project.
+- Hot Module Replacement (HMR) to see changes instantly without reloading the page.
+- Basic linting setup to help you write cleaner and error-free code.
+
+## React Plugins
+
+You can use either of these official React plugins:
+
+- **@vitejs/plugin-react** – Uses Oxc for better performance.
+- **@vitejs/plugin-react-swc** – Uses SWC for faster compilation.
 
 ## React Compiler
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The React Compiler is **not enabled** by default in this project because it can make development and build times slower.
 
-## Expanding the Oxlint configuration
+If you want to use it, you can enable it later by following the official React documentation.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## TypeScript Support
+
+If you plan to build a larger or production-ready application, you can use the **React + TypeScript** template instead.
+
+TypeScript helps you catch errors early and makes your code easier to manage as your project grows.
+
+## Getting Started
+
+Install all dependencies:
+
+```bash
+npm install
+```
+
+Start the development server:
+
+```bash
+npm run dev
+```
+
+Build the project:
+
+```bash
+npm run build
+```
+
+Preview the production build:
+
+```bash
+npm run preview
+```
+
+## Learn More
+
+- React Documentation: https://react.dev
+- Vite Documentation: https://vitejs.dev
+
