@@ -32,34 +32,6 @@ If you plan to build a larger or production-ready application, you can use the *
 
 TypeScript helps you catch errors early and makes your code easier to manage as your project grows.
 
-## Getting Started
 
-Install all dependencies:
 
-```bash
-npm install
-```
-
-Start the development server:
-
-```bash
-npm run dev
-```
-
-Build the project:
-
-```bash
-npm run build
-```
-
-Preview the production build:
-
-```bash
-npm run preview
-```
-
-## Learn More
-
-- React Documentation: https://react.dev
-- Vite Documentation: https://vitejs.dev
 
