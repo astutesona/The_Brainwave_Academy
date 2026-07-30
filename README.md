@@ -1,4 +1,4 @@
-# React + Vite
+# THE BRAINWAVE ACADEMY
 
 This project is created using **React** and **Vite**.
 
